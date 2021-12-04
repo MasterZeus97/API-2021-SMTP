@@ -16,6 +16,7 @@ public class Client {
 
     private static final Logger LOG = Logger.getLogger(Client.class.getName());
 
+
     /**
      * Main function to run client
      *
@@ -67,8 +68,8 @@ public class Client {
                 }
 
                 //------------------------------------------------------------------------------------------------------
-
-                out.write("MAIL FROM: olivier.tissot-daguette@heig-vd.ch\r\n");
+                String sender = "thibault.seem@gmail.com";//"olivier.tissot-daguette@heig-vd.ch";
+                out.write("MAIL FROM: " + sender + "\r\n");
                 out.flush();
 
                 //------------------------------------------------------------------------------------------------------
@@ -82,7 +83,7 @@ public class Client {
 
                 //------------------------------------------------------------------------------------------------------
 
-                String mailTo = "joel.dossantosmatias@heig-vd.ch";
+                String mailTo = "seemth1310@gmail.com";//"joel.dossantosmatias@heig-vd.ch";
 
                 out.write("RCPT TO: " + mailTo + "\r\n");
                 out.flush();
@@ -112,13 +113,13 @@ public class Client {
 
                 //------------------------------------------------------------------------------------------------------
 
-                out.write("From: olivier.tissot-daguette@heig-vd.ch\r\n");
+                out.write("From: " + sender + "\r\n");
                 out.write("To: " + mailTo + "\r\n");
                 //out.write("Cc: thibault.seem@heig-vd.ch\n");
                 out.write("Subject: Prout\r\n");
 
-                String s = "Contrairement à toi\r\n";
-                out.write(s);
+                String message = "Contrairement à toi\r\n";
+                out.write(message);
 
                 out.write(".\r\n");
                 out.flush();
