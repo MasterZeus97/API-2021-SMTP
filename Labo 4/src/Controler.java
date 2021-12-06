@@ -20,7 +20,7 @@ public class Controler {
         System.out.println("Sender : " + prank.getGroup().getSender());
         System.out.println("\nVictims : ");
         for(int i = 0; i < prank.getGroup().getSizeGroup(); ++i)
-            System.out.println(prank.getGroup().getVictims().get(0));
+            System.out.println(prank.getGroup().getVictims().get(i));
         System.out.println("\nMessage : \n" + prank.getMessage());
         /*
 

@@ -1,10 +1,12 @@
 package prank;
 
-import java.io.*;
+import java.io.File;
 import java.util.ArrayList;
-import java.util.List;
+import java.util.Properties;
 import java.util.Random;
-import java.util.logging.Level;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 
 public class PrankConfig {
     private Emails emails;
@@ -12,43 +14,25 @@ public class PrankConfig {
     private ArrayList<Group> groups;
 
     public PrankConfig(String[] configFiles) {
-        groups = new ArrayList<>();
-        emails = new Emails(configFiles[1]);
-        messages = new Messages(configFiles[2]);
-
-        BufferedReader in = null;
         try{
-            in = new BufferedReader(new InputStreamReader(new FileInputStream(configFiles[0]), "UTF-8"));
-            String line = null;
-            int totalGroup = 0, n = 0;
+            FileInputStream fis = new FileInputStream("config/config.properties");
+            Properties prop = new Properties();
+            prop.load(fis);
 
-            if(!in.readLine().equals("GROUP"))
-                throw new IOException("The file format is not respected");
-            line = in.readLine();
-            System.out.println(line);
+            groups = new ArrayList<>();
+            emails = new Emails(prop.getProperty("files.email"));
+            messages = new Messages(prop.getProperty("files.message"));
 
-            totalGroup = Integer.parseInt(line);
-            int[] groupSize = new int[totalGroup];
-
-            if(!in.readLine().equals("SIZE"))
-                throw new IOException("The file format is not respected");
-            line = in.readLine();
-
-            while(!line.equals("3ND")){
-                groupSize[n] = Integer.parseInt(line);
-                ++n;
-                line = in.readLine();
-            }
+            int totalGroup = Integer.parseInt(prop.getProperty("size.group"));
+            int groupSize = Integer.parseInt(prop.getProperty("size.sizeGroup"));
 
             for(int i = 0; i < totalGroup; i++){
-                groups.add(new Group(groupSize[i], emails));
+                groups.add(new Group(groupSize, emails));
             }
-
-            in.close();
 
         }
         catch(IOException ex) {
-            System.out.println("sad");
+            System.out.println(ex.getMessage());
         }
     }
 

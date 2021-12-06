@@ -25,8 +25,9 @@ public class Group {
         emailsClone.remove(sender);
 
         for(int i = 0; i < sizeGroup; ++i){
-            victims.add(emailsClone.get(rand.nextInt(emailsClone.size())));
-            emailsClone.remove(victims.get(i));
+            String email = emailsClone.get(rand.nextInt(emailsClone.size()));
+            victims.add(email);
+            emailsClone.remove(email);
         }
     }
 
