@@ -3,6 +3,8 @@ import prank.Group;
 
 import java.io.*;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -17,12 +19,14 @@ public class Controler {
 
     public void sendEmail(){
         prank.generatePrank();
-        System.out.println("Sender : " + prank.getGroup().getSender());
-        System.out.println("\nVictims : ");
-        for(int i = 0; i < prank.getGroup().getSizeGroup(); ++i)
-            System.out.println(prank.getGroup().getVictims().get(i));
-        System.out.println("\nMessage : \n" + prank.getMessage());
-        /*
+        ArrayList<Group> group = prank.getGroup();
+        for(Group g : group){
+            formatAndSend(g);
+        }
+    }
+
+    private void formatAndSend(Group group){
+        prank.generatePrank();
 
         // Log output on a single line
         System.setProperty("java.util.logging.SimpleFormatter.format", "%4$s: %5$s%6$s%n");
@@ -32,7 +36,15 @@ public class Controler {
         BufferedReader in = null;
 
         try {
-            clientSocket = new Socket("smtp.heig-vd.ch", 25);
+            FileInputStream fis = new FileInputStream("config/config.properties");
+            Properties prop = new Properties();
+
+            prop.load(fis);
+            String address = prop.getProperty("smtp.serverAddress");
+            int port = Integer.parseInt(prop.getProperty("smtp.serverPort"));
+            clientSocket = new Socket(address, port);
+            fis.close();
+
             out = new BufferedWriter(new OutputStreamWriter(clientSocket.getOutputStream(), "UTF-8"));
             in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream(), "UTF-8"));
 
@@ -63,7 +75,7 @@ public class Controler {
                 }
 
                 //------------------------------------------------------------------------------------------------------
-                String sender = prank.getGroup().getSender();//"olivier.tissot-daguette@heig-vd.ch";
+                String sender = group.getSender();//"olivier.tissot-daguette@heig-vd.ch";
                 out.write("MAIL FROM: " + sender + "\r\n");
                 out.flush();
 
@@ -78,19 +90,21 @@ public class Controler {
 
                 //------------------------------------------------------------------------------------------------------
 
-                String mailTo = prank.getGroup().getVictims()[0];//"joel.dossantosmatias@heig-vd.ch";
-                // A CHECK COMMENT INDIQUER PLUSIEURS EMAILS
+                for(int i = 0; i < group.getVictims().size(); ++i){
+                    String mailTo = group.getVictims().get(i);//"joel.dossantosmatias@heig-vd.ch";
+                    // A CHECK COMMENT INDIQUER PLUSIEURS EMAILS
 
-                out.write("RCPT TO: " + mailTo + "\r\n");
-                out.flush();
+                    out.write("RCPT TO: " + mailTo + "\r\n");
+                    out.flush();
 
-                //------------------------------------------------------------------------------------------------------
+                    //--------------------------------------------------------------------------------------------------
 
-                line = in.readLine();
-                if(line.startsWith("250 ")) {
-                    System.out.println(line);
-                }else{
-                    throw new RuntimeException("Exception : Email d'envoi erreur");
+                    line = in.readLine();
+                    if(line.startsWith("250 ")) {
+                        System.out.println(line);
+                    }else{
+                        throw new RuntimeException("Exception : Email d'envoi erreur");
+                    }
                 }
 
                 //------------------------------------------------------------------------------------------------------
@@ -109,14 +123,25 @@ public class Controler {
 
                 //------------------------------------------------------------------------------------------------------
 
+                out.write("Content-Type: text/plain: charset=\"utf-8\"\r\n");
                 out.write("From: " + sender + "\r\n");
+                String mailTo = "";
+                for(int i = 0; i < group.getVictims().size(); ++i) {
+                     mailTo += group.getVictims().get(i) + ", ";//"joel.dossantosmatias@heig-vd.ch";
+                }
+
+                mailTo = mailTo.substring(0, mailTo.length()-2);
+
                 out.write("To: " + mailTo + "\r\n");
+
                 //out.write("Cc: thibault.seem@heig-vd.ch\n");
 
                 String message = prank.getMessage();
                 out.write(message);
 
-                out.write(".\r\n");
+                System.out.print(message);
+
+                out.write("\r\n.\r\n");
                 out.flush();
 
                 //------------------------------------------------------------------------------------------------------
@@ -155,11 +180,11 @@ public class Controler {
         catch (IOException ex) {
             LOG.log(Level.SEVERE, ex.toString(), ex);
         } finally {
-            try {
+           /* try {
                 if (out != null) out.close();
             } catch (IOException ex) {
                 LOG.log(Level.SEVERE, ex.toString(), ex);
-            }
+            }*/
             try {
                 if (in != null) in.close();
             } catch (IOException ex) {
@@ -170,7 +195,7 @@ public class Controler {
             } catch (IOException ex) {
                 LOG.log(Level.SEVERE, ex.toString(), ex);
             }
-        }*/
+        }
 
     }
 }

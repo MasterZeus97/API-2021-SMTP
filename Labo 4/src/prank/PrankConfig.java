@@ -41,8 +41,7 @@ public class PrankConfig {
         return messages.getMessages().get(rand.nextInt(messages.getMessages().size()));
     }
 
-    Group getGroup() {
-        Random rand = new Random();
-        return groups.get(rand.nextInt(groups.size()));
+    ArrayList<Group> getGroup() {
+        return groups;
     }
 }

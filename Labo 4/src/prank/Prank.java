@@ -1,9 +1,11 @@
 package prank;
 
+import java.util.ArrayList;
+
 public class Prank {
     private PrankConfig prankconfig;
     private String message;
-    private Group group;
+    private ArrayList<Group> group;
 
     public Prank(String[] configFiles) {
         prankconfig = new PrankConfig(configFiles);
@@ -19,7 +21,7 @@ public class Prank {
         return message;
     }
 
-    public Group getGroup() {
+    public ArrayList<Group> getGroup() {
         return group;
     }
 }

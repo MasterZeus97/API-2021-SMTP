@@ -1,7 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="931a2ac0-d15d-4395-99aa-2dbe7ab940f8" name="Changes" comment="" />
+    <list default="true" id="931a2ac0-d15d-4395-99aa-2dbe7ab940f8" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Client/src/main/java/ch/heigvd/api/calc/Client.java" beforeDir="false" afterPath="$PROJECT_DIR$/Client/src/main/java/ch/heigvd/api/calc/Client.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Client/target/classes/ch/heigvd/api/calc/Client.class" beforeDir="false" afterPath="$PROJECT_DIR$/Client/target/classes/ch/heigvd/api/calc/Client.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Labo 4/src/Controler.java" beforeDir="false" afterPath="$PROJECT_DIR$/Labo 4/src/Controler.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Labo 4/src/prank/PrankConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/Labo 4/src/prank/PrankConfig.java" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -18,7 +24,8 @@
   <component name="PropertiesComponent">
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/../Labo 4" />
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/Labo 4" />
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
@@ -28,7 +35,11 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1637833073286</updated>
+      <workItem from="1638805164174" duration="672000" />
     </task>
     <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
   </component>
 </project>
