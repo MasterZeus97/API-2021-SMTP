@@ -11,6 +11,8 @@ public class Group {
 
     public Group(int sizeGroup, Emails emails) {
         victims = new ArrayList<>();
+        if(sizeGroup < 3)
+            throw new RuntimeException("La taille du groupe doit être supérieure à 3");
         this.sizeGroup = sizeGroup;
         defineGroup(emails);
     }
@@ -24,7 +26,7 @@ public class Group {
         sender = emailsClone.get(rand.nextInt(emailsClone.size()));
         emailsClone.remove(sender);
 
-        for(int i = 0; i < sizeGroup; ++i){
+        for(int i = 0; i < sizeGroup-1; ++i){
             String email = emailsClone.get(rand.nextInt(emailsClone.size()));
             victims.add(email);
             emailsClone.remove(email);
