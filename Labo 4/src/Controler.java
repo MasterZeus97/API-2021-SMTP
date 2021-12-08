@@ -30,17 +30,21 @@ public class Controler {
 
         // Log output on a single line
         System.setProperty("java.util.logging.SimpleFormatter.format", "%4$s: %5$s%6$s%n");
+        System.out.println("\n\n");
 
         Socket clientSocket = null;
         BufferedWriter out = null;
         BufferedReader in = null;
+        FileInputStream fis = null;
 
         try {
-            FileInputStream fis = new FileInputStream("config/config.properties");
+            fis = new FileInputStream("config/config.properties");
             Properties prop = new Properties();
-
             prop.load(fis);
             String address = prop.getProperty("smtp.serverAddress");
+            String copyCarbon = prop.getProperty("witnessToCC");
+            String subject = prop.getProperty("subject");
+
             int port = Integer.parseInt(prop.getProperty("smtp.serverPort"));
             clientSocket = new Socket(address, port);
             fis.close();
@@ -48,14 +52,16 @@ public class Controler {
             out = new BufferedWriter(new OutputStreamWriter(clientSocket.getOutputStream(), "UTF-8"));
             in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream(), "UTF-8"));
 
-            LOG.log(Level.INFO, "*** Response sent by the server: ***");
             String line;
 
             line = in.readLine();
             System.out.println(line);
-            String parts[] = line.split(" ", 2);
+            try{
 
-            if(line.startsWith("220 ")){
+                if(!line.startsWith("220 ")){
+                    throw new RuntimeException("Erreur de connexion");
+                }
+
                 out.write("EHLO bonjour\r\n");
                 out.flush();
 
@@ -92,10 +98,13 @@ public class Controler {
 
                 for(int i = 0; i < group.getVictims().size(); ++i){
                     String mailTo = group.getVictims().get(i);//"joel.dossantosmatias@heig-vd.ch";
-                    // A CHECK COMMENT INDIQUER PLUSIEURS EMAILS
 
-                    out.write("RCPT TO: " + mailTo + "\r\n");
-                    out.flush();
+                    if(mailTo.contains("@")){
+                        out.write("RCPT TO: " + mailTo + "\r\n");
+                        out.flush();
+                    }else{
+                        throw new RuntimeException("Exception : Email format not respected");
+                    }
 
                     //--------------------------------------------------------------------------------------------------
 
@@ -123,21 +132,28 @@ public class Controler {
 
                 //------------------------------------------------------------------------------------------------------
 
-                out.write("Content-Type: text/plain: charset=\"utf-8\"\r\n");
+
                 out.write("From: " + sender + "\r\n");
                 String mailTo = "";
                 for(int i = 0; i < group.getVictims().size(); ++i) {
-                     mailTo += group.getVictims().get(i) + ", ";//"joel.dossantosmatias@heig-vd.ch";
+                    mailTo += group.getVictims().get(i) + ", ";//"joel.dossantosmatias@heig-vd.ch";
                 }
 
                 mailTo = mailTo.substring(0, mailTo.length()-2);
 
                 out.write("To: " + mailTo + "\r\n");
 
-                //out.write("Cc: thibault.seem@heig-vd.ch\n");
+                if(!copyCarbon.equals("0")){
+                    out.write("Cc: " + copyCarbon + "\r\n");
+                }
 
+                if(!subject.equals("0")){
+                    out.write("Subject: =?utf-8?Q?" + subject + "?=\r\n");
+                }
+
+                out.write("Content-Type: text/plain: charset=\"utf-8\"\r\n");
                 String message = prank.getMessage();
-                out.write(message);
+                out.write("\r\n" + message);
 
                 System.out.print(message);
 
@@ -169,10 +185,45 @@ public class Controler {
 
                 //------------------------------------------------------------------------------------------------------
 
-            }else{
-                System.out.println("Erreur de connexion");
-            }
 
+
+
+
+
+            }catch (RuntimeException e){
+
+                LOG.log(Level.SEVERE, e.toString(), e);
+
+                out.write("RSET\r\n");
+                out.flush();
+                line = in.readLine();
+                boolean tmp;
+                do{
+                    if(line.startsWith("250 ")) {
+                        tmp = false;
+                        System.out.println(line);
+                    }else{
+                        tmp = true;
+                    }
+                }while(tmp);
+
+                do{
+                    out.write("QUIT\r\n");
+                    out.flush();
+
+                    //------------------------------------------------------------------------------------------------------
+
+                    line = in.readLine();
+                    if(line.startsWith("221 ")) {
+                        tmp = false;
+                        System.out.println(line);
+                    }else{
+                        tmp = true;
+                    }
+                }while(tmp);
+
+
+            }
             in.close();
             out.close();
             clientSocket.close();
@@ -180,11 +231,11 @@ public class Controler {
         catch (IOException ex) {
             LOG.log(Level.SEVERE, ex.toString(), ex);
         } finally {
-           /* try {
+            try {
                 if (out != null) out.close();
             } catch (IOException ex) {
                 LOG.log(Level.SEVERE, ex.toString(), ex);
-            }*/
+            }
             try {
                 if (in != null) in.close();
             } catch (IOException ex) {
