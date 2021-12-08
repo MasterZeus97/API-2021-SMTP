@@ -37,7 +37,7 @@ public class Controler {
         Socket clientSocket = null;
         BufferedWriter out = null;
         BufferedReader in = null;
-        FileInputStream fis = null;
+        FileInputStream fis;
 
         try {
             fis = new FileInputStream("config/config.properties");
@@ -54,28 +54,31 @@ public class Controler {
             out = new BufferedWriter(new OutputStreamWriter(clientSocket.getOutputStream(), "UTF-8"));
             in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream(), "UTF-8"));
 
-            String line;
+            String lineIn;
+            String lineOut;
 
-            line = in.readLine();
-            System.out.println(line);
+            lineIn = in.readLine();
+            System.out.println(lineIn);
             try{
 
-                if(!line.startsWith("220 ")){
+                if(!lineIn.startsWith("220 ")){
                     throw new RuntimeException("Erreur de connexion");
                 }
 
-                out.write("EHLO bonjour\r\n");
+                lineOut = "EHLO bonjour\r\n";
+                System.out.print(lineOut);
+                out.write(lineOut);
                 out.flush();
 
                 boolean testLecture = true;
-                line = in.readLine();
+                lineIn = in.readLine();
 
                 //------------------------------------------------------------------------------------------------------
                 while(testLecture){
-                    System.out.println(line);
-                    if(line.startsWith("250-")){
-                        line = in.readLine();
-                    }else if(line.startsWith("250 ")){
+                    System.out.println(lineIn);
+                    if(lineIn.startsWith("250-")){
+                        lineIn = in.readLine();
+                    }else if(lineIn.startsWith("250 ")){
                         testLecture = false;
                     }else{
                         throw new RuntimeException("Exception : Connection Impossible");
@@ -84,14 +87,16 @@ public class Controler {
 
                 //------------------------------------------------------------------------------------------------------
                 String sender = group.getSender();//"olivier.tissot-daguette@heig-vd.ch";
-                out.write("MAIL FROM: " + sender + "\r\n");
+                lineOut = "MAIL FROM: " + sender + "\r\n";
+                System.out.print(lineOut);
+                out.write(lineOut);
                 out.flush();
 
                 //------------------------------------------------------------------------------------------------------
 
-                line = in.readLine();
-                if(line.startsWith("250 ")){
-                    System.out.println(line);
+                lineIn = in.readLine();
+                if(lineIn.startsWith("250 ")){
+                    System.out.println(lineIn);
                 }else{
                     throw new RuntimeException("Exception : Email d'envoi erreur");
                 }
@@ -111,37 +116,46 @@ public class Controler {
 
                 //------------------------------------------------------------------------------------------------------
 
-                out.write("DATA\r\n");
+                lineOut = "DATA\r\n";
+                System.out.print(lineOut);
+                out.write(lineOut);
                 out.flush();
 
                 //------------------------------------------------------------------------------------------------------
 
-                line = in.readLine();
-                if(line.startsWith("354 ")) {
-                    System.out.println(line);
+                lineIn = in.readLine();
+                if(lineIn.startsWith("354 ")) {
+                    System.out.println(lineIn);
                 }else{
                     throw new RuntimeException("Exception : Email d'envoi erreur");
                 }
 
                 //------------------------------------------------------------------------------------------------------
 
+                lineOut = "From: " + sender + "\r\n";
+                System.out.print(lineOut);
+                out.write(lineOut);
 
-                out.write("From: " + sender + "\r\n");
                 String mailTo = "";
                 for(int i = 0; i < group.getVictims().size(); ++i) {
                     mailTo += group.getVictims().get(i) + ", ";//"joel.dossantosmatias@heig-vd.ch";
                 }
-
                 mailTo = mailTo.substring(0, mailTo.length()-2);
 
-                out.write("To: " + mailTo + "\r\n");
+                lineOut = "To: " + mailTo + "\r\n";
+                System.out.print(lineOut);
+                out.write(lineOut);
 
                 if(!copyCarbon.equals("0")){
-                    out.write("Cc: " + copyCarbon + "\r\n");
+                    lineOut = "Cc: " + copyCarbon + "\r\n";
+                    System.out.print(lineOut);
+                    out.write(lineOut);
                 }
 
                 if(!subject.equals("0")){
-                    out.write("Subject: =?utf-8?B?" + Base64.getEncoder().encodeToString(subject.getBytes(StandardCharsets.UTF_8)) + "?=\r\n");
+                    lineOut = "Subject: =?utf-8?B?" + Base64.getEncoder().encodeToString(subject.getBytes(StandardCharsets.UTF_8)) + "?=\r\n";//"Subject: =?utf-8?Q?" + subject + "?=\r\n";
+                    System.out.print(lineOut);
+                    out.write(lineOut);
                 }
 
                 out.write("Content-Type: text/plain: charset=\"utf-8\"\r\n");
@@ -155,61 +169,61 @@ public class Controler {
 
                 //------------------------------------------------------------------------------------------------------
 
-                line = in.readLine();
-                if(line.startsWith("250 ")) {
-                    System.out.println(line);
+                lineIn = in.readLine();
+                if(lineIn.startsWith("250 ")) {
+                    System.out.println(lineIn);
                 }else{
                     throw new RuntimeException("Exception : Envoi d'email prob");
                 }
 
                 //------------------------------------------------------------------------------------------------------
-
-                out.write("QUIT\r\n");
+                lineOut = "QUIT\r\n";
+                System.out.print(lineOut);
+                out.write(lineOut);
                 out.flush();
 
                 //------------------------------------------------------------------------------------------------------
 
-                line = in.readLine();
-                if(line.startsWith("221 ")) {
-                    System.out.println(line);
+                lineIn = in.readLine();
+                if(lineIn.startsWith("221 ")) {
+                    System.out.println(lineIn);
                 }else{
                     throw new RuntimeException("Exception : Problem de fermeture de connexion");
                 }
 
                 //------------------------------------------------------------------------------------------------------
 
-
-
-
-
-
             }catch (RuntimeException e){
 
                 LOG.log(Level.SEVERE, e.toString(), e);
 
-                out.write("RSET\r\n");
+                lineOut = "RSET\r\n";
+                System.out.print(lineOut);
+                out.write(lineOut);
                 out.flush();
-                line = in.readLine();
+                lineIn = in.readLine();
                 boolean tmp;
                 do{
-                    if(line.startsWith("250 ")) {
+                    if(lineIn.startsWith("250 ")) {
                         tmp = false;
-                        System.out.println(line);
+                        System.out.println("Abort mission");
                     }else{
                         tmp = true;
                     }
                 }while(tmp);
 
                 do{
+                    lineOut = "QUIT\r\n";
+                    System.out.print(lineOut);
                     out.write("QUIT\r\n");
                     out.flush();
 
                     //------------------------------------------------------------------------------------------------------
 
-                    line = in.readLine();
-                    if(line.startsWith("221 ")) {
+                    lineIn = in.readLine();
+                    if(lineIn.startsWith("221 ")) {
                         tmp = false;
-                        System.out.println(line);
+                        System.out.println("Mission aborted");
                     }else{
                         tmp = true;
                     }
