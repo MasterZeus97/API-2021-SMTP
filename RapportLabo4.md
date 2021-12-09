@@ -2,7 +2,9 @@
 
 ## Description
 Ce projet est un laboratoire pour le cours de API de l'HEIG-VD. Le but de ce projet est d'envoyer des messages (choisis aléatoirement parmi une liste) par mail à des groupes de personnes (les mails sont choisis aléatoirement également parmi une liste). L'envoyeur est choisi parmi la liste de mail, également aléatoirement.
+
 ## Installation et implementation d'un serveur SMTP de test
+
 L'installation d'un serveur SMTP en local permet de faire des tests sans envoyer les mails à d'autres personnes. Cela permet également de voir le contenu du mail généré.
 Pour effectuer nos tests de fonctionnements nous avons utilisé MockMock.
 
@@ -10,12 +12,14 @@ Lien : https://github.com/tweakers/MockMock
 
 Cette application fournit une interface web supplémentaire qui permet de simuler une boîte de réception, accessible sur http://localhost:8282. Il est possible de choisir les ports que l'on souhaite utilisé pour l'interface web et pour le serveur SMTP. Par défaut le serveur STMP utilise le port 25, mais certains OS peuvent empêcher le lancement du serveur sur ce port si l'application n'est pas exécuté par un utilisateur administrateur. 
 
+## Création d'image docker et lancement du container
+
 Dans ce laboratoire, nous utiliserons un container docker pour faire tourner ce serveur. Le fichier dockerfile et le fichier .one-jar.jar pour faire lancer MockMock (récupérer dans le github ci-dessus) se trouvent dans le dossier docker, à la racine du git. Pour créer notre image docker, nous avons utiliser la commande suivante : 
 Docker build –-tag seemt/mockmock
 
 Nous avons donc maintenant une image appelée seemt/mockmock.
 
-Afin de lancer le serveur mockmock, nous avons utilisé la commande suivante :
+Afin de lancer le container qui fera tourner le serveur mockmock, nous avons utilisé la commande suivante :
 Docker run -p 25:25 -p 8282:8282 seemt/mockmock
 
 Elle permet de connecter le port 25 du container au port 25 de la machine physique, et le port 8282 du container au port 8282 de la machine physique. Nous avons choisi ces ports pour ne pas voir qu'on travaillait sur un docker, et que le fonctionnement de mockmock soit identique à si on l'avait lancé directement en ligne de commande.
